@@ -1,0 +1,28 @@
+{
+  "name": "ratelimiter-grammy",
+  "version": "1.0.0",
+  "description": "This is a plugin for GrammY Telegram bot framework to rate limit users and deflect heavy spamming in your bots.",
+  "main": "./src/rateLimiter.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "GrammyY",
+    "GrammyY plugin",
+    "bot",
+    "rate limiter",
+    "Telegram",
+    "Telegram bot",
+    "bot framework",
+    "framework"
+  ],
+  "peerDependencies": {
+    "grammy": ">=1.x"
+  },
+  "author": "Amir Zouerami",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^15.0.3",
+    "grammy": "^1.1.4"
+  }
+}
