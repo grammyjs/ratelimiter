@@ -5,7 +5,7 @@ export interface Options {
     timeFrame?: number;
     limit?: number;
     onLimitExceeded?: (ctx?: Context, next?: NextFunction) => void;
-    keyGenerator?: (ctx: Context) => {};
+    keyGenerator?: (ctx: Context) => number | undefined;
 }
 
 export const defaults = {
