@@ -61,7 +61,7 @@ app.listen(3000, () => {
     console.log('The application is listening on port 3000!');
 })
 ```
-As you can see in the above example, each user is allowed to send 3 requests every 2 seconds. If said user sends more requests, the bot replies with _Please refrain from sending too many requests_. That request will not travel further and dies immediately as we do not call `next()` in `onLimitExceeded`. Although sending a message to spammers might not be a wise decision since you'll be basically spamming telegram servers with your bot. _This example was for demonstration purposes only_.
+As you can see in the above example, each user is allowed to send 3 requests every 2 seconds. If said user sends more requests, the bot replies with _Please refrain from sending too many requests_. That request will not travel further and dies immediately as we do not call `next()` in `onLimitExceeded`. Although sending a message to spammers might not be a wise decision since you'll be basically spamming telegram servers with your bot. _This example was for demonstration purposes only_. **Also to avoid flooding telegram servers, `onLimitExceeded` only executes once in every `timeFrame`.**
 
 Another use case would be limiting the incoming requests from a chat instead of a specific user:
 ``` typescript
