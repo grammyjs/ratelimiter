@@ -13,7 +13,7 @@
 **TLDR**: Under normal circumstances, every request will be processed & answered by your bot which means spamming it will not be that difficult. Adding this middleware to your bot limits the number of requests a specific Telegram user can send during a certain time frame.
 
 ## 🔧 Customizability
-This middleware exposes 4 customizable options:
+This middleware exposes 5 customizable options:
 - `timeFrame`: The time frame during which the requests will be monitored (defaults to 1000 ms).
 - `limit`: The number of requests allowed in each `timeFrame` (defaults to 1).
 - `storageClient`: The type of storage to use for keeping track of users and their requests. It supports Redis as well. The default value is `MEMORY_STORE` which uses an in-memory Map, but you can also pass in a Redis client created by [ioredis](https://github.com/luin/ioredis) package.
