@@ -1,5 +1,5 @@
 export class MemoryStore {
-    hits = new Map();
+    hits = new Map<string, number>();
     limiterResponded = false;
 
     constructor(timeFrame: number) {
@@ -14,7 +14,7 @@ export class MemoryStore {
         return this.limiterResponded;
     }
 
-    increment(key: number): number {
+    increment(key: string): number {
         let counter = this.hits.get(key) ?? 0;
         counter++;
         this.hits.set(key, counter);

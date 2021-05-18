@@ -16,11 +16,20 @@
 This middleware exposes 4 customizable options:
 - `timeFrame`: The time frame during which the requests will be monitored (defaults to 1000 ms).
 - `limit`: The number of requests allowed in each `timeFrame` (defaults to 1).
-- `onLimitExceeded`: A function that describes what to do if the user exceeds the limit (ignores the extra requests by default).
+- `storageClient`: The type of storage to use for keeping track of users and their requests. It supports Redis as well. The default value is `MEMORY_STORE` which uses an in-memory Map, but you can also pass in a Redis client created by [ioredis](https://github.com/luin/ioredis) package.
+- `onLimitExceeded`: A function that describes what to do if the user exceeds the limit (ignores the extra requests by default and does not warn the user).
 - `keyGenerator`: A function that describes a unique key generated for each user (it uses `from.id` by default).
 
+> Note: You must have redis-server 6.0 and above on your server to use Redis storage client with ratelimYter. Older versions of Redis are not supported.
+
 ## 💻 How to Use
-The following example uses [express](https://github.com/expressjs/express) as the web server and [webhooks](https://grammy.dev/guide/deployment-types.html) to rate-limit users:
+There are two ways of using ratelimYter:
+- Accepting the defaults (Default Configuration).
+- Passing a custom object containing your settings (Manual Configuration).
+
+### ✅ Default Configuration
+
+The following example uses [express](https://github.com/expressjs/express) as the webserver and [webhooks](https://grammy.dev/guide/deployment-types.html) to rate-limit users. This snippet demonstrates the easiest way of using RatelimYter-grammY which is accepting the default behavior:
 
 ``` typescript
 import express from "express";
@@ -38,22 +47,36 @@ app.listen(3000, () => {
     console.log('The application is listening on port 3000!');
 })
 ```
-This code demonstrates the easiest way of usign RatelimYter-grammY which is accepting the default behavior, but as mentioned before you can pass arguments to the `limit()` function to alter these behaviors:
+
+### ✅ Manual Configuration
+
+As mentioned before, you can pass an `Options` object to the `limit()` function to alter ratelimYter's behaviors. In the following snippet, I have decided to use Redis as my storage option:
+
 ``` typescript
 import express from "express";
 import { Bot } from "grammy";
 import { limit } from "ratelimyter-grammy"
+import Redis from "ioredis";
+
 
 const app = express();
 const bot = new Bot("YOUR BOT TOKEN HERE");
+const redis = new Redis();
+
 
 app.use(express.json());
 bot.use(limit({
     timeFrame: 2000,
+
     limit: 3,
-    onLimitExceeded: (ctx, next) => {
-        ctx.reply("Please refrain from sending too many requests.")
-    }
+
+    // "MEMORY_STORAGE" is the default mode. Therefore if you want to use Redis, do not pass storageClient at all.
+    storageClient: redis,
+
+    onLimitExceeded: ctx => { ctx?.reply("Please refrain from sending too many requests!") },
+
+    // Note that the key should be a number in string format such as "123456789"
+    keyGenerator: ctx => { return ctx.from?.id.toString() }
 }));
 
 app.listen(3000, () => {
@@ -61,7 +84,9 @@ app.listen(3000, () => {
     console.log('The application is listening on port 3000!');
 })
 ```
-As you can see in the above example, each user is allowed to send 3 requests every 2 seconds. If said user sends more requests, the bot replies with _Please refrain from sending too many requests_. That request will not travel further and dies immediately as we do not call `next()` in `onLimitExceeded`. Although sending a message to spammers might not be a wise decision since you'll be basically spamming telegram servers with your bot. _This example was for demonstration purposes only_. **Also to avoid flooding telegram servers, `onLimitExceeded` only executes once in every `timeFrame`.**
+As you can see in the above example, each user is allowed to send 3 requests every 2 seconds. If said user sends more requests, the bot replies with _Please refrain from sending too many requests_. That request will not travel further and dies immediately as we do not call `next()`.
+
+> Note: To avoid flooding Telegram servers, `onLimitExceeded` is only executed once in every `timeFrame`.
 
 Another use case would be limiting the incoming requests from a chat instead of a specific user:
 ``` typescript
@@ -74,14 +99,10 @@ const bot = new Bot("YOUR BOT TOKEN HERE");
 
 app.use(express.json());
 bot.use(limit({
-    timeFrame: 2000,
-    limit: 3,
-    onLimitExceeded: (ctx, next) => {
-        ctx.reply("Please refrain from sending too many requests.")
-    },
     keyGenerator: (ctx) => {
         if (ctx.chat?.type === "group" || ctx.chat?.type === "supergroup") {
-            return ctx.chat.id
+            // Note that the key should be a number in string format such as "123456789"
+            return ctx.chat.id.toString();
         }
     }
 }));

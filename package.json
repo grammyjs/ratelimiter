@@ -22,7 +22,9 @@
   "author": "Amir Zouerami",
   "license": "MIT",
   "devDependencies": {
+    "@types/ioredis": "^4.26.4",
     "@types/node": "^15.0.3",
-    "grammy": "^1.1.4"
+    "grammy": "^1.1.4",
+    "ioredis": "^4.27.2"
   }
 }
