@@ -13,8 +13,7 @@ export class RedisStore {
         let counter = await this.client.incr(key);
 
         if (counter === 1) {
-            this.client.pexpire(key, this.timeFrame);
-            return counter;
+            await this.client.pexpire(key, this.timeFrame);
         }
         return counter;
     }
