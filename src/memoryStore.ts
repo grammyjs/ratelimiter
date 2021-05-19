@@ -1,17 +1,8 @@
 export class MemoryStore {
     hits = new Map<string, number>();
-    limiterResponded = false;
 
     constructor(timeFrame: number) {
-        setInterval(() => { this.hits.clear(), this.limiterResponded = false }, timeFrame);
-    }
-
-    exceededLimit() {
-        this.limiterResponded = true;
-    }
-
-    limiterAlreadyResponded() {
-        return this.limiterResponded;
+        setInterval(() => { this.hits.clear() }, timeFrame);
     }
 
     increment(key: string): number {

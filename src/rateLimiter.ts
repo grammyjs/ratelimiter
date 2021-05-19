@@ -19,6 +19,7 @@ import { Redis } from "ioredis";
  * @returns a middleware function to be passed to a middleware using `bot.use()`
  * @description A middleware function generator
  */
+
 export const limit = (UserOptions?: OptionsInterface) => {
     const options = { ...defaultOptions, ...UserOptions };
     const store = options.storageClient === "MEMORY_STORE" ?
@@ -34,12 +35,11 @@ export const limit = (UserOptions?: OptionsInterface) => {
 
         const hits = await store.increment(key);
 
-        if (hits > options.limit) {
-            if (!store.limiterAlreadyResponded()) {
-                store.exceededLimit();
-                return options.onLimitExceeded(ctx, next);
-            }
-        } else {
+        if (hits === options.limit + 1) {
+            return options.onLimitExceeded(ctx, next);
+        }
+
+        if (hits <= options.limit) {
             return next();
         }
     }

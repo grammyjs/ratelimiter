@@ -44,7 +44,7 @@ export interface OptionsInterface {
 export const defaultOptions = {
     timeFrame: 1000,
     limit: 1,
-    onLimitExceeded: (ctx?: Context, next?: NextFunction) => { },
+    onLimitExceeded: (ctx: Context, next: NextFunction) => { },
     storageClient: "MEMORY_STORE",
     keyGenerator: (ctx: Context) => ctx.from && ctx.from.id.toString(),
 }

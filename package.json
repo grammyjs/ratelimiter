@@ -17,7 +17,8 @@
     "framework"
   ],
   "peerDependencies": {
-    "grammy": ">=1.x"
+    "grammy": ">=1.x",
+    "ioredis": ">=4.27"
   },
   "author": "Amir Zouerami",
   "license": "MIT",
