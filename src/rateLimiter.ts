@@ -30,7 +30,7 @@ export const limit = (UserOptions?: OptionsInterface) => {
     const middlewareFunc: MiddlewareFn = async (ctx: Context, next: NextFunction) => {
         let keyCheck = options.keyGenerator(ctx);
         if (!keyCheck) {
-            return next();
+            return await next();
         }
 
         const key = "RATE_LIMYTER" + keyCheck;
@@ -41,7 +41,7 @@ export const limit = (UserOptions?: OptionsInterface) => {
         }
 
         if (hits <= options.limit) {
-            return next();
+            return await next();
         }
     }
 
