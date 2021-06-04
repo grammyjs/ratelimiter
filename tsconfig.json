@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "charset": "utf8",
+    "forceConsistentCasingInFileNames": true,
+    "newLine": "lf",
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedParameters": false,
+    "rootDir": "./src/",
+    "strict": true,
+    "declaration": true,
+    "module": "CommonJS",
+    "outDir": "./node-compatible/",
+    "skipLibCheck": true,
+    "target": "es2019"
+  }
+}

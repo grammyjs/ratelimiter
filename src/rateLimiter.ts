@@ -1,9 +1,9 @@
 import { MemoryStore } from "./memoryStore.ts";
 import {
-  OptionsInterface,
-  defaultOptions,
   Context,
+  defaultOptions,
   NextFunction,
+  OptionsInterface,
   RedisType,
 } from "./Types&Defaults.ts";
 import { RedisStore } from "./redisStore.ts";
@@ -27,13 +27,12 @@ import { RedisStore } from "./redisStore.ts";
  */
 
 export const limit = <C extends Context, RT extends RedisType>(
-  userOptions?: OptionsInterface<C, RT>
+  userOptions?: OptionsInterface<C, RT>,
 ) => {
   const options = { ...defaultOptions, ...userOptions };
-  const store =
-    options.storageClient === "MEMORY_STORE"
-      ? new MemoryStore(options.timeFrame)
-      : new RedisStore(options.storageClient as RT, options.timeFrame);
+  const store = options.storageClient === "MEMORY_STORE"
+    ? new MemoryStore(options.timeFrame)
+    : new RedisStore(options.storageClient as RT, options.timeFrame);
 
   const middlewareFunc = async (ctx: C, next: NextFunction) => {
     const keyCheck = options.keyGenerator(ctx);
