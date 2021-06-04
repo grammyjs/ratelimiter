@@ -1,8 +1,8 @@
 # RatelimYter
 
 <p align="center">
-  <a href="https://github.com/Amir-Zouerami/ratelimYter-grammY">
-    <img src="./RATE_LIMYTER.jpg" alt="ratelimYter Logo">
+  <a href="https://github.com/Amir-Zouerami/rateLimiter">
+    <img src="./RATELIMITER.svg" alt="ratelimiter Logo">
   </a>
 </p>
 
