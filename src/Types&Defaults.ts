@@ -1,10 +1,10 @@
 interface User {
   id: number;
-  is_bot: boolean;
-  first_name: string;
-  last_name?: string;
-  username?: string;
-  language_code?: string;
+  "is_bot": boolean;
+  "first_name": string;
+  "last_name"?: string;
+  "username"?: string;
+  "language_code"?: string;
 }
 
 export interface Context {
@@ -58,7 +58,7 @@ export interface OptionsInterface<C extends Context, RT extends RedisType> {
 export const defaultOptions = {
   timeFrame: 1000,
   limit: 1,
-  onLimitExceeded: (ctx: Context, next: NextFunction) => {},
+  onLimitExceeded: (_ctx: Context, _next: NextFunction) => {},
   storageClient: "MEMORY_STORE",
   keyGenerator: (ctx: Context) => ctx.from && ctx.from.id.toString(),
 };
