@@ -40,11 +40,12 @@ jobs:
         working-directory: src
 
         
-#         Currently we have no dependencies
-#       - name: Cache dependencies
-#         run: deno cache deps.ts
-#         working-directory: src
+      #   Currently we have no dependencies
+      # - name: Cache dependencies
+      #   run: deno cache deps.ts
+      #   working-directory: src
 
-      - name: Run tests
-        run: deno test -A --unstable
-        working-directory: src
+      # Currently we have no need for testing
+      # - name: Run tests
+      #   run: deno test -A --unstable
+      #   working-directory: src
