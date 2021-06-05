@@ -7,12 +7,13 @@
     "noImplicitReturns": true,
     "noUncheckedIndexedAccess": true,
     "noUnusedParameters": false,
-    "rootDir": "./src/",
+    "rootDir": "../src",
     "strict": true,
     "declaration": true,
     "module": "CommonJS",
-    "outDir": "./node-compatible/",
+    "outDir": "./out",
     "skipLibCheck": true,
     "target": "es2019"
-  }
+  },
+  "include": ["../src"]
 }
