@@ -1,5 +1,5 @@
 {
-  "name": "ratelimiter",
+  "name": "@grammyjs/ratelimiter",
   "version": "1.1.2",
   "description": "This is a plugin for grammY and Telegraf Telegram bot frameworks to rate limit users and deflect heavy spamming in your bots.",
   "scripts": {
