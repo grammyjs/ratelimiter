@@ -1,21 +1,21 @@
 {
   "name": "ratelimiter",
   "version": "1.1.1",
-  "description": "This is a plugin for GrammY and Telegraf Telegram bot frameworks to rate limit users and deflect heavy spamming in your bots.",
+  "description": "This is a plugin for grammY and Telegraf Telegram bot frameworks to rate limit users and deflect heavy spamming in your bots.",
   "scripts": {
     "prepare": "deno2node tsconfig.json"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Amir-Zouerami/rate-limiter.git"
+    "url": "git+https://github.com/grammyjs/ratelimiter.git"
   },
   "main": "./out/ratelimiter.js",
   "files": [
     "out/"
   ],
   "keywords": [
-    "GrammyY",
-    "GrammyY plugin",
+    "grammyY",
+    "grammyY plugin",
     "Telegraf",
     "Telegraf plugin",
     "bot",
@@ -28,9 +28,9 @@
   "author": "Amir Zouerami",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Amir-Zouerami/rate-limiter/issues"
+    "url": "https://github.com/grammyjs/ratelimiter/issues"
   },
-  "homepage": "https://github.com/Amir-Zouerami/rate-limiter#readme",
+  "homepage": "https://github.com/grammyjs/ratelimiter#readme",
   "devDependencies": {
     "deno2node": "~0.5.0"
   }

@@ -1,6 +1,6 @@
 [![Test Deno](https://github.com/Amir-Zouerami/rateLimiter/actions/workflows/deno.yml/badge.svg)](https://github.com/Amir-Zouerami/rateLimiter/actions/workflows/deno.yml)
 
-# RatelimYter
+# rateLimiter
 
 <p align="center">
   <a href="https://github.com/Amir-Zouerami/rateLimiter">
@@ -10,7 +10,7 @@
 
 ## ❓ What does it do?
 ****
-🔌 [rateLimiter](https://github.com/Amir-Zouerami/rateLimiter) is a rate-limiting middleware for Telegram bots made with [GrammY](https://grammy.dev/) or [Telegraf](https://github.com/telegraf/telegraf) bot frameworks. It rate limits users and stop them from spamming requests to your bot. You should note that this package **does not** rate limit the incoming requests from telegram servers, instead, it tracks the incoming requests by `from.id` and dismisses them on arrival so no further processing load is added to your servers.
+🔌 [rateLimiter](https://github.com/Amir-Zouerami/rateLimiter) is a rate-limiting middleware for Telegram bots made with [grammY](https://grammy.dev/) or [Telegraf](https://github.com/telegraf/telegraf) bot frameworks. It rate limits users and stop them from spamming requests to your bot. You should note that this package **does not** rate limit the incoming requests from telegram servers, instead, it tracks the incoming requests by `from.id` and dismisses them on arrival so no further processing load is added to your servers.
 
 Under normal circumstances, every request will be processed & answered by your bot which means spamming it will not be that difficult. Adding this middleware to your bot limits the number of requests a specific Telegram user can send during a certain time frame.
 
@@ -25,7 +25,7 @@ This middleware exposes 5 customizable options:
 > Note: You must have redis-server **2.6.0** and above on your server to use Redis storage client with rateLimiter. Older versions of Redis are not supported.
 
 ## 💻 Runtime Support
-This plugin supports both [GrammY](https://grammy.dev/) and [Telegraf](https://telegraf.js.org/) bot frameworks, therefore Deno and Node are both supported. The following examples use [express](https://github.com/expressjs/express) but you can use rateLimiter with any grammy/telegraf supported framework or with no frameworks at all.
+This plugin supports both [grammY](https://grammy.dev/) and [Telegraf](https://telegraf.js.org/) bot frameworks, therefore Deno and Node are both supported. The following examples use [express](https://github.com/expressjs/express) but you can use rateLimiter with any grammy/telegraf supported framework or with no frameworks at all.
 
 ## 💻 How to Use
 There are two ways of using rateLimiter:
@@ -39,7 +39,7 @@ The following example uses [express](https://github.com/expressjs/express) as th
 ``` typescript
 import express from "express";
 import { Bot } from "grammy";
-import { limit } from "ratelimiter"
+import { limit } from "@grammyjs/ratelimiter"
 
 const app = express();
 const bot = new Bot("YOUR BOT TOKEN HERE");
@@ -60,7 +60,7 @@ As mentioned before, you can pass an `Options` object to the `limit()` function 
 ``` typescript
 import express from "express";
 import { Bot } from "grammy";
-import { limit } from "ratelimiter"
+import { limit } from "@grammyjs/ratelimiter"
 import Redis from "ioredis";
 
 
@@ -97,7 +97,7 @@ Another use case would be limiting the incoming requests from a chat instead of 
 ``` typescript
 import express from "express";
 import { Bot } from "grammy";
-import { limit } from "ratelimiter"
+import { limit } from "@grammyjs/ratelimiter"
 
 const app = express();
 const bot = new Bot("YOUR BOT TOKEN HERE");
