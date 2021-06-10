@@ -1,4 +1,4 @@
-import { RedisType } from "./Types&Defaults.ts";
+import { RedisType } from "./typesAndDefaults.ts";
 
 export class RedisStore {
   private client: RedisType;

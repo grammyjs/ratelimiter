@@ -5,7 +5,7 @@ import {
   NextFunction,
   OptionsInterface,
   RedisType,
-} from "./Types&Defaults.ts";
+} from "./typesAndDefaults.ts";
 import { RedisStore } from "./redisStore.ts";
 
 /**
