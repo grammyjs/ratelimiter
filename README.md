@@ -1,3 +1,5 @@
+[![Test Deno](https://github.com/Amir-Zouerami/rateLimiter/actions/workflows/deno.yml/badge.svg)](https://github.com/Amir-Zouerami/rateLimiter/actions/workflows/deno.yml)
+
 # RatelimYter
 
 <p align="center">

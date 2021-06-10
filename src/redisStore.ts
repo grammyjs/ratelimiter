@@ -1,10 +1,10 @@
 import { RedisType } from "./Types&Defaults.ts";
 
-export class RedisStore<RT extends RedisType> {
-  private client: RT;
+export class RedisStore {
+  private client: RedisType;
   timeFrame: number;
 
-  constructor(client: RT, timeFrame: number) {
+  constructor(client: RedisType, timeFrame: number) {
     this.client = client;
     this.timeFrame = timeFrame;
   }
