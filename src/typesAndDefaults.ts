@@ -60,5 +60,5 @@ export const defaultOptions = {
   limit: 1,
   onLimitExceeded: (_ctx: Context, _next: NextFunction) => {},
   storageClient: "MEMORY_STORE",
-  keyGenerator: (ctx: Context) => ctx.from === undefined ? undefined : && ctx.from.id.toString(),
+  keyGenerator: (ctx: Context) => ctx.from === undefined ? undefined : ctx.from.id.toString(),
 };
