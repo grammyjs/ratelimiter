@@ -52,7 +52,7 @@ export interface OptionsInterface<C extends Context, RT extends RedisType> {
    * @description A function to generate a unique key for every user. You cound set it as any key you want (e.g group id)
    * @see [Getting Started](https://github.com/Amir-Zouerami/rateLimiter#-how-to-use)
    */
-  keyGenerator?: (ctx: C) => void;
+  keyGenerator?: (ctx: C) => string | undefined;
 }
 
 export const defaultOptions = {
@@ -60,5 +60,5 @@ export const defaultOptions = {
   limit: 1,
   onLimitExceeded: (_ctx: Context, _next: NextFunction) => {},
   storageClient: "MEMORY_STORE",
-  keyGenerator: (ctx: Context) => ctx.from && ctx.from.id.toString(),
+  keyGenerator: (ctx: Context) => ctx.from === undefined ? undefined : ctx.from.id.toString(),
 };
