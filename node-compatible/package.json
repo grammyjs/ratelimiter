@@ -9,7 +9,7 @@
     "type": "git",
     "url": "git+https://github.com/grammyjs/rateLimiter.git"
   },
-  "main": "./out/rateLimiter.js",
+  "main": "./out/mod.js",
   "files": [
     "out/"
   ],
