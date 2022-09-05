@@ -1,6 +1,6 @@
-[![Test Deno](https://github.com/Amir-Zouerami/rateLimiter/actions/workflows/deno.yml/badge.svg)](https://github.com/Amir-Zouerami/rateLimiter/actions/workflows/deno.yml)
+[![Test Deno](https://github.com/Amir-Zouerami/ratelimiter/actions/workflows/deno.yml/badge.svg)](https://github.com/Amir-Zouerami/ratelimiter/actions/workflows/deno.yml)
 
-# rateLimiter
+# ratelimiter
 
 <p align="center">
   <a href="https://github.com/Amir-Zouerami/rateLimiter">
@@ -10,7 +10,7 @@
 
 ## ❓ What does it do?
 ****
-🔌 [rateLimiter](https://github.com/Amir-Zouerami/rateLimiter) is a rate-limiting middleware for Telegram bots made with [grammY](https://grammy.dev/) or [Telegraf](https://github.com/telegraf/telegraf) bot frameworks. It rate limits users and stop them from spamming requests to your bot. You should note that this package **does not** rate limit the incoming requests from telegram servers, instead, it tracks the incoming requests by `from.id` and dismisses them on arrival so no further processing load is added to your servers.
+🔌 [ratelimiter](https://github.com/grammyjs/ratelimiter) is a rate-limiting middleware for Telegram bots made with [grammY](https://grammy.dev/) or [Telegraf](https://github.com/telegraf/telegraf) bot frameworks. It rate limits users and stop them from spamming requests to your bot. You should note that this package **does not** rate limit the incoming requests from telegram servers, instead, it tracks the incoming requests by `from.id` and dismisses them on arrival so no further processing load is added to your servers.
 
 Under normal circumstances, every request will be processed & answered by your bot which means spamming it will not be that difficult. Adding this middleware to your bot limits the number of requests a specific Telegram user can send during a certain time frame.
 
@@ -22,19 +22,19 @@ This middleware exposes 5 customizable options:
 - `onLimitExceeded`: A function that describes what to do if the user exceeds the limit (ignores the extra requests by default).
 - `keyGenerator`: A function that returns a unique key generated for each user (it uses `from.id` by default). This key is used to identify the user, therefore it should be unique and user specific.
 
-> Note: You must have redis-server **2.6.0** and above on your server to use Redis storage client with rateLimiter. Older versions of Redis are not supported.
+> Note: You must have redis-server **2.6.0** and above on your server to use Redis storage client with ratelimiter. Older versions of Redis are not supported.
 
 ## 💻 Runtime Support
-This plugin supports both [grammY](https://grammy.dev/) and [Telegraf](https://telegraf.js.org/) bot frameworks, therefore Deno and Node are both supported. The following examples use [express](https://github.com/expressjs/express) but you can use rateLimiter with any grammy/telegraf supported framework or with no frameworks at all.
+This plugin supports both [grammY](https://grammy.dev/) and [Telegraf](https://telegraf.js.org/) bot frameworks, therefore Deno and Node are both supported. The following examples use [express](https://github.com/expressjs/express) but you can use ratelimiter with any grammy/telegraf supported framework or with no frameworks at all.
 
 ## 💻 How to Use
-There are two ways of using rateLimiter:
+There are two ways of using ratelimiter:
 - Accepting the defaults (Default Configuration).
 - Passing a custom object containing your settings (Manual Configuration).
 
 ### ✅ Default Configuration
 
-The following example uses [express](https://github.com/expressjs/express) as the webserver and [webhooks](https://grammy.dev/guide/deployment-types.html) to rate-limit users. This snippet demonstrates the easiest way of using rateLimiter which is accepting the default behavior:
+The following example uses [express](https://github.com/expressjs/express) as the webserver and [webhooks](https://grammy.dev/guide/deployment-types.html) to rate-limit users. This snippet demonstrates the easiest way of using ratelimiter which is accepting the default behavior:
 
 ``` typescript
 import express from "express";
@@ -55,7 +55,7 @@ app.listen(3000, () => {
 
 ### ✅ Manual Configuration
 
-As mentioned before, you can pass an `Options` object to the `limit()` function to alter rateLimiter's behaviors. In the following snippet, I have decided to use Redis as my storage option:
+As mentioned before, you can pass an `Options` object to the `limit()` function to alter ratelimiter's behaviors. In the following snippet, I have decided to use Redis as my storage option:
 
 ``` typescript
 import express from "express";
