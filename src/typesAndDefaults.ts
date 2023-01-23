@@ -48,7 +48,7 @@ export interface OptionsInterface<C extends Context, RT extends RedisType> {
   
    /**
    * @default false
-   * @description send the rate limited response for every message during the limit exceeded timeframe
+   * @description Send the rate limited response for every message during the limit exceeded timeframe.
    */
   replyAlways?: boolean;
 
