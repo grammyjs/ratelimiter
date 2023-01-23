@@ -45,6 +45,12 @@ export interface OptionsInterface<C extends Context, RT extends RedisType> {
    * @description Executed Only once in each timeframe. By default it does nothing so the user is not notified of rate-limiting. The middleware simply ignores excessive requests and the user just has to wait.
    */
   onLimitExceeded?: (ctx: C, next: NextFunction) => void;
+  
+   /**
+   * @default false
+   * @description send the rate limited response for every message during the limit exceeded timeframe
+   */
+  replyAlways?: boolean;
 
   /**
    * @param ctx Is the context object you get from grammy/telegraf.
