@@ -1,10 +1,12 @@
+import { unref } from "./platform.deno.ts";
+
 export class MemoryStore {
   hits = new Map<string, number>();
 
   constructor(timeFrame: number) {
-    setInterval(() => {
+    unref(setInterval(() => {
       this.hits.clear();
-    }, timeFrame);
+    }, timeFrame));
   }
 
   increment(key: string): number {
