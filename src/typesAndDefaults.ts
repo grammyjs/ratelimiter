@@ -42,9 +42,15 @@ export interface OptionsInterface<C extends Context, RT extends RedisType> {
   /**
    * @param ctx Is the context object you get from grammy/telegraf.
    * @param next Is the next function you get from grammy/telegraf.
-   * @description Executed Only once in each timeframe. By default it does nothing so the user is not notified of rate-limiting. The middleware simply ignores excessive requests and the user just has to wait.
+   * @description Executed only once for each limit excess unless alwaysReply is explicitly set to true. By default, it does nothing, meaning that the user is not notified when they exceed the limit. The middleware simply ignores excessive requests and the user is required to wait.
    */
   onLimitExceeded?: (ctx: C, next: NextFunction) => void;
+  
+   /**
+   * @default false
+   * @description Whether to always call onLimitExceeded or not.
+   */
+  alwaysReply?: boolean;
 
   /**
    * @param ctx Is the context object you get from grammy/telegraf.

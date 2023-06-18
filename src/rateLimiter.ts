@@ -43,7 +43,7 @@ export const limit = <C extends Context, RT extends RedisType>(
     const key = "RATE_LIMITER" + keyCheck;
     const hits = await store.increment(key);
 
-    if (hits === options.limit + 1) {
+    if (hits === options.limit + 1 || (options.alwaysReply && hits > options.limit)) {
       return options.onLimitExceeded(ctx, next);
     }
 
