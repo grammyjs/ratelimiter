@@ -54,17 +54,24 @@ export interface OptionsInterface<C extends Context, RT extends RedisType> {
 
   /**
    * @param ctx Is the context object you get from grammy/telegraf.
-   * @returns A number in **string** format as the unique key (identifier).
-   * @description A function to generate a unique key for every user. You cound set it as any key you want (e.g group id)
+   * @returns A unique **string** key (identifier).
+   * @description A function to generate a unique key for every user. You could set it as any key you want (e.g. group id)
    * @see [Getting Started](https://github.com/Amir-Zouerami/rateLimiter#-how-to-use)
    */
   keyGenerator?: (ctx: C) => string | undefined;
+
+  /**
+   * @default "RATE_LIMITER"
+   * @description A string prefix that is getting added to the storage key after calling the `keyGenerator()`.
+   */
+  keyPrefix?: string | undefined;
 }
 
-export const defaultOptions = {
+export const defaultOptions: OptionsInterface<Context, RedisType> = {
   timeFrame: 1000,
   limit: 1,
   onLimitExceeded: (_ctx: Context, _next: NextFunction) => {},
   storageClient: "MEMORY_STORE",
-  keyGenerator: (ctx: Context) => ctx.from === undefined ? undefined : ctx.from.id.toString(),
+  keyGenerator: (ctx: Context) => ctx.from?.id.toString(),
+  keyPrefix: "RATE_LIMITER",
 };
