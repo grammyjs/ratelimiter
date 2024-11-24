@@ -67,7 +67,18 @@ export interface OptionsInterface<C extends Context, RT extends RedisType> {
   keyPrefix?: string | undefined;
 }
 
-export const defaultOptions: OptionsInterface<Context, RedisType> = {
+type DefaultOptions = Required<Pick<
+  OptionsInterface<Context, RedisType>, (
+    | 'timeFrame'
+    | 'limit'
+    | 'onLimitExceeded'
+    | 'storageClient'
+    | 'keyGenerator'
+    | 'keyPrefix'
+  )>
+>;
+
+export const defaultOptions: DefaultOptions = {
   timeFrame: 1000,
   limit: 1,
   onLimitExceeded: (_ctx: Context, _next: NextFunction) => {},
