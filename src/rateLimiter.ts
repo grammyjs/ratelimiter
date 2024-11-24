@@ -29,7 +29,7 @@ import { RedisStore } from "./redisStore.ts";
 export const limit = <C extends Context, RT extends RedisType>(
   userOptions?: OptionsInterface<C, RT>,
 ) => {
-  const options = { ...defaultOptions, ...(userOptions ?? {}) };
+  const options = { ...defaultOptions, ...userOptions };
   const store = options.storageClient === "MEMORY_STORE"
     ? new MemoryStore(options.timeFrame)
     : new RedisStore(options.storageClient as RT, options.timeFrame);
