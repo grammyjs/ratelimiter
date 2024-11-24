@@ -21,6 +21,7 @@ This middleware exposes 5 customizable options:
 - `storageClient`: The type of storage to use for keeping track of users and their requests. It supports Redis as well. The default value is `MEMORY_STORE` which uses an in-memory Map, but you can also pass in a Redis client from [ioredis](https://github.com/luin/ioredis) or [redis](https://deno.land/x/redis) packages. Other redis drivers might work as well, but I have not tested them.
 - `onLimitExceeded`: A function that describes what to do if the user exceeds the limit (ignores the extra requests by default).
 - `keyGenerator`: A function that returns a unique key generated for each user (it uses `from.id` by default). This key is used to identify the user, therefore it should be unique and user specific.
+- `keyPrefix`: The prefix to be added to your key (returned from `keyGenerator`). Will be "RATE_LIMITER" if no value passed.
 
 > Note: You must have redis-server **2.6.0** and above on your server to use Redis storage client with ratelimiter. Older versions of Redis are not supported.
 
