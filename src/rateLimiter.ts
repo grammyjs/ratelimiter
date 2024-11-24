@@ -34,14 +34,15 @@ export const limit = <C extends Context, RT extends RedisType>(
     ? new MemoryStore(options.timeFrame)
     : new RedisStore(options.storageClient as RT, options.timeFrame);
 
+  const keyPrefix = userOptions?.keyPrefix ?? defaultOptions.keyPrefix;
+
   const middlewareFunc = async (ctx: C, next: NextFunction) => {
-    const keyCheck = options.keyGenerator(ctx);
-    if (!keyCheck) {
+    const key = options.keyGenerator(ctx);
+    if (!key) {
       return await next();
     }
 
-    const key = "RATE_LIMITER" + keyCheck;
-    const hits = await store.increment(key);
+    const hits = await store.increment(keyPrefix + key);
 
     if (hits === options.limit + 1 || (options.alwaysReply && hits > options.limit)) {
       return options.onLimitExceeded(ctx, next);
