@@ -1,0 +1,56 @@
+{
+	"name": "@grammyjs/ratelimiter",
+	"version": "2.0.0",
+	"description": "The most advanced and flexible rate-limiter for grammY.",
+	"type": "module",
+	"scripts": {
+		"build": "deno2node --project tsconfig.json",
+		"test:deno": "deno test --allow-net",
+		"test:node": "node --test dist/tests/",
+		"test": "npm run test:deno && npm run build && npm run test:node"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/grammyjs/rateLimiter.git"
+	},
+	"files": [
+		"dist/"
+	],
+	"main": "./dist/mod.js",
+	"module": "./dist/mod.js",
+	"types": "./dist/mod.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/mod.d.ts",
+			"import": "./dist/mod.js",
+			"require": "./dist/mod.js"
+		},
+		"./storages": {
+			"types": "./dist/storages.d.ts",
+			"import": "./dist/storages.js",
+			"require": "./dist/storages.js"
+		}
+	},
+	"keywords": [
+		"grammy",
+		"grammy-plugin",
+		"telegraf",
+		"bot",
+		"ratelimiter",
+		"rate-limit",
+		"telegram",
+		"telegram-bot",
+		"middleware",
+		"spam-protection"
+	],
+	"author": "Amir Zouerami",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/grammyjs/rateLimiter/issues"
+	},
+	"homepage": "https://github.com/grammyjs/rateLimiter#readme",
+	"devDependencies": {
+		"@types/node": "^20.11.20",
+		"deno2node": "^1.5.0"
+	}
+}

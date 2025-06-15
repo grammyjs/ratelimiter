@@ -1,1 +1,1 @@
-export const unref = Deno.unrefTimer
+export const unref = Deno.unrefTimer;
