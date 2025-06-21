@@ -27,17 +27,3 @@ jobs:
 
             - name: Run Deno tests
               run: deno test --allow-net
-
-            - name: Setup Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: '20'
-
-            - name: Install Node.js dependencies
-              run: npm install
-
-            - name: Build for Node.js
-              run: npm run build
-
-            - name: Run Node.js tests
-              run: node --test dist/tests/

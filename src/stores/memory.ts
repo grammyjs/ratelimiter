@@ -15,7 +15,8 @@ interface MemoryRecord<T> {
  */
 export class MemoryStore implements IStorageEngine {
 	private readonly store = new Map<string, MemoryRecord<TokenBucketState | number | boolean>>();
-	private readonly cleanupIntervalId?: number;
+	// @ts-ignore NodeJS runtime is not available in deno. However deno2node will use this for node.js builds.
+	private readonly cleanupIntervalId?: number | NodeJS.Timeout;
 
 	/**
 	 * Constructs a new `MemoryStore`.
