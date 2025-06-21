@@ -1,4 +1,4 @@
-import { Limiter, limit } from '../mod.ts';
+import { limit, Limiter } from '../mod.ts';
 import { MemoryStore } from '../src/stores/memory.ts';
 import { assert, assertEquals, assertRejects } from '@std/assert';
 import type { GrammyContext, NextFunction } from '../src/types.ts';
@@ -8,14 +8,18 @@ const createMockCtx = (fromId: number): GrammyContext => ({
 	chat: { id: fromId, type: 'private', first_name: 'test' },
 });
 
-const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const createMemoryStore = () => new MemoryStore(null);
 
-Deno.test('Core Rate Limiter Tests', async t => {
+Deno.test('Core Rate Limiter Tests', async (t) => {
 	await t.step('Builder should throw if essential components are missing', async () => {
-		// deno-lint-ignore require-await
-		await assertRejects(async () => new Limiter().build(), Error, 'A limiting strategy must be defined');
+		await assertRejects(
+			// deno-lint-ignore require-await
+			async () => new Limiter().build(),
+			Error,
+			'A limiting strategy must be defined',
+		);
 
 		await assertRejects(
 			// deno-lint-ignore require-await
@@ -26,7 +30,10 @@ Deno.test('Core Rate Limiter Tests', async t => {
 
 		await assertRejects(
 			// deno-lint-ignore require-await
-			async () => new Limiter().fixedWindow({ limit: 1, timeFrame: 1000 }).useStorage(createMemoryStore()).build(),
+			async () =>
+				new Limiter().fixedWindow({ limit: 1, timeFrame: 1000 }).useStorage(
+					createMemoryStore(),
+				).build(),
 			Error,
 			'A key generation strategy must be defined',
 		);
@@ -34,7 +41,8 @@ Deno.test('Core Rate Limiter Tests', async t => {
 
 	await t.step('FixedWindowStrategy should limit requests correctly', async () => {
 		const storage = createMemoryStore();
-		const limiter = new Limiter().useStorage(storage).fixedWindow({ limit: 2, timeFrame: 1000 }).limitFor('user');
+		const limiter = new Limiter().useStorage(storage).fixedWindow({ limit: 2, timeFrame: 1000 })
+			.limitFor('user');
 
 		const middleware = limit(limiter);
 		let nextCalled = 0;
@@ -147,7 +155,7 @@ Deno.test('Core Rate Limiter Tests', async t => {
 			.useStorage(storage)
 			.fixedWindow({ limit: 1, timeFrame: 1000 })
 			.limitFor('user')
-			.onlyIf(ctx => ctx.from?.id === 100);
+			.onlyIf((ctx) => ctx.from?.id === 100);
 
 		const middleware = limit(limiter);
 		let nextCalled = 0;
@@ -178,7 +186,7 @@ Deno.test('Core Rate Limiter Tests', async t => {
 			.useStorage(storage)
 			.fixedWindow({
 				// Admins get 5 requests, others get 1
-				limit: ctx => (isAdmin(ctx) ? 5 : 1),
+				limit: (ctx) => (isAdmin(ctx) ? 5 : 1),
 				timeFrame: 1000,
 			})
 			.limitFor('user');
@@ -204,7 +212,8 @@ Deno.test('Core Rate Limiter Tests', async t => {
 
 	await t.step("limitFor('global') should apply the same limit to all users", async () => {
 		const storage = createMemoryStore();
-		const limiter = new Limiter().useStorage(storage).fixedWindow({ limit: 1, timeFrame: 1000 }).limitFor('global');
+		const limiter = new Limiter().useStorage(storage).fixedWindow({ limit: 1, timeFrame: 1000 })
+			.limitFor('global');
 
 		const middleware = limit(limiter);
 		let nextCalled = 0;
@@ -263,7 +272,7 @@ Deno.test('Core Rate Limiter Tests', async t => {
 		const limiter = new Limiter<ContextWithCommand>()
 			.useStorage(storage)
 			.fixedWindow({ limit: 1, timeFrame: 1000 })
-			.limitFor(ctx => {
+			.limitFor((ctx) => {
 				const userId = ctx.from?.id;
 				// This is now fully type-safe, no `any` cast needed.
 				const command = ctx.message?.text?.split(' ')[0];

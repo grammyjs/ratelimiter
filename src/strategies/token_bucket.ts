@@ -31,12 +31,15 @@ export class TokenBucketStrategy implements ILimiterStrategy<TokenBucketState> {
 	 */
 	constructor(options: TokenBucketStrategyOptions) {
 		if (options.bucketSize <= 0 || options.interval <= 0 || options.tokensPerInterval <= 0) {
-			throw new Error('TokenBucketStrategy: bucketSize, interval, and tokensPerInterval must be positive numbers.');
+			throw new Error(
+				'TokenBucketStrategy: bucketSize, interval, and tokensPerInterval must be positive numbers.',
+			);
 		}
 
 		this.options = options;
 
-		const timeToFill = Math.ceil(this.options.bucketSize / this.options.tokensPerInterval) * this.options.interval;
+		const timeToFill = Math.ceil(this.options.bucketSize / this.options.tokensPerInterval) *
+			this.options.interval;
 		this.storageTtl = timeToFill;
 	}
 

@@ -8,9 +8,9 @@ import type {
 	ILimiterStrategy,
 	IStorageEngine,
 	KeyGenerator,
+	LimiterEvents,
 	LimitResult,
 	Mutable,
-	LimiterEvents,
 	OnLimitExceeded,
 	PenaltyDurationGenerator,
 } from '../types.ts';
@@ -30,7 +30,9 @@ export class Limiter<C extends GrammyContext> {
 	 * Sets the limiting strategy to Fixed Window.
 	 * @param options The configuration for the fixed window.
 	 */
-	public fixedWindow(options: { limit: number | DynamicLimitGenerator<C>; timeFrame: number }): this {
+	public fixedWindow(
+		options: { limit: number | DynamicLimitGenerator<C>; timeFrame: number },
+	): this {
 		this.config.strategy = new FixedWindowStrategy({
 			limit: typeof options.limit === 'number' ? options.limit : 1,
 			timeFrame: options.timeFrame,
@@ -47,7 +49,9 @@ export class Limiter<C extends GrammyContext> {
 	 * Sets the limiting strategy to Token Bucket.
 	 * @param options The configuration for the token bucket.
 	 */
-	public tokenBucket(options: { bucketSize: number; tokensPerInterval: number; interval: number }): this {
+	public tokenBucket(
+		options: { bucketSize: number; tokensPerInterval: number; interval: number },
+	): this {
 		this.config.strategy = new TokenBucketStrategy(options);
 		return this;
 	}
@@ -103,7 +107,10 @@ export class Limiter<C extends GrammyContext> {
 	 * @param eventName The event to listen for.
 	 * @param listener The callback function.
 	 */
-	public on<E extends keyof LimiterEvents<C>>(eventName: E, listener: (...args: LimiterEvents<C>[E]) => void): this {
+	public on<E extends keyof LimiterEvents<C>>(
+		eventName: E,
+		listener: (...args: LimiterEvents<C>[E]) => void,
+	): this {
 		this.events.on(eventName, listener);
 		return this;
 	}
@@ -113,7 +120,10 @@ export class Limiter<C extends GrammyContext> {
 	 * @param eventName The event to stop listening for.
 	 * @param listener The callback function to remove.
 	 */
-	public off<E extends keyof LimiterEvents<C>>(eventName: E, listener: (...args: LimiterEvents<C>[E]) => void): this {
+	public off<E extends keyof LimiterEvents<C>>(
+		eventName: E,
+		listener: (...args: LimiterEvents<C>[E]) => void,
+	): this {
 		this.events.off(eventName, listener);
 		return this;
 	}
@@ -154,7 +164,9 @@ export class Limiter<C extends GrammyContext> {
 	 *
 	 * @param options The penalty configuration.
 	 */
-	public withPenalty(options: { penaltyTime: number | PenaltyDurationGenerator<C>; penaltyKeyPrefix?: string }): this {
+	public withPenalty(
+		options: { penaltyTime: number | PenaltyDurationGenerator<C>; penaltyKeyPrefix?: string },
+	): this {
 		let generator: PenaltyDurationGenerator<C>;
 
 		if (typeof options.penaltyTime === 'number') {

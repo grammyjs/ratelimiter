@@ -152,11 +152,18 @@ export interface LimiterEvents<C extends GrammyContext> extends EventMap {
  * @param info Information about the limit that was hit.
  * @param storage The storage engine instance, for advanced use cases like notification locks.
  */
-export type OnLimitExceeded<C extends GrammyContext> = (ctx: C, info: LimitResult, storage: IStorageEngine) => unknown;
+export type OnLimitExceeded<C extends GrammyContext> = (
+	ctx: C,
+	info: LimitResult,
+	storage: IStorageEngine,
+) => unknown;
 
 export type KeyGenerator<C extends GrammyContext> = (ctx: C) => string | undefined;
 export type DynamicLimitGenerator<C extends GrammyContext> = (ctx: C) => number;
-export type PenaltyDurationGenerator<C extends GrammyContext> = (ctx: C, info: LimitResult) => number;
+export type PenaltyDurationGenerator<C extends GrammyContext> = (
+	ctx: C,
+	info: LimitResult,
+) => number;
 
 export type Mutable<T> = {
 	-readonly [P in keyof T]: T[P];

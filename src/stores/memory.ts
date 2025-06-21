@@ -15,7 +15,7 @@ interface MemoryRecord<T> {
  */
 export class MemoryStore implements IStorageEngine {
 	private readonly store = new Map<string, MemoryRecord<TokenBucketState | number | boolean>>();
-	private readonly cleanupIntervalId?: number | NodeJS.Timeout;
+	private readonly cleanupIntervalId?: number;
 
 	/**
 	 * Constructs a new `MemoryStore`.

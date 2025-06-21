@@ -10,8 +10,14 @@ export { limit } from './src/core/middleware.ts';
 export { Limiter } from './src/core/builder.ts';
 
 // available strategies.
-export { FixedWindowStrategy, type FixedWindowStrategyOptions } from './src/strategies/fixed_window.ts';
-export { TokenBucketStrategy, type TokenBucketStrategyOptions } from './src/strategies/token_bucket.ts';
+export {
+	FixedWindowStrategy,
+	type FixedWindowStrategyOptions,
+} from './src/strategies/fixed_window.ts';
+export {
+	TokenBucketStrategy,
+	type TokenBucketStrategyOptions,
+} from './src/strategies/token_bucket.ts';
 
 // all core types and interfaces that developers might need for type annotations.
 export type {

@@ -48,7 +48,9 @@ export class Rule<C extends GrammyContext> {
 		}
 
 		if (!config.keyGenerator) {
-			throw new Error('Cannot build rule: A key generation strategy must be defined. Use .limitFor() on the builder.');
+			throw new Error(
+				'Cannot build rule: A key generation strategy must be defined. Use .limitFor() on the builder.',
+			);
 		}
 
 		if (!config.events) {

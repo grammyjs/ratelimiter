@@ -7,4 +7,4 @@
  */
 
 export { MemoryStore } from './src/stores/memory.ts';
-export { RedisStore, type IRedisClient } from './src/stores/redis.ts';
+export { type IRedisClient, RedisStore } from './src/stores/redis.ts';

@@ -11,7 +11,9 @@ import type { Rule } from './rule.ts';
  * @param ruleOrBuilder An instance of a `Rule` or a `Limiter` builder.
  * @returns A grammY-compatible middleware function.
  */
-export function limit<C extends GrammyContext>(ruleOrBuilder: Rule<C> | Limiter<C>): (ctx: C, next: NextFunction) => Promise<void> {
+export function limit<C extends GrammyContext>(
+	ruleOrBuilder: Rule<C> | Limiter<C>,
+): (ctx: C, next: NextFunction) => Promise<void> {
 	const rule = ruleOrBuilder instanceof Limiter ? ruleOrBuilder.build() : ruleOrBuilder;
 
 	return async (ctx: C, next: NextFunction): Promise<void> => {
