@@ -1,6 +1,21 @@
-/.idea/
+# Build output
+dist/
+storages.js
+storages.d.ts
+
+# Node.js
 node_modules/
 package-lock.json
-*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Deno
+deno.lock
+
+# Editor
 .vscode/
-node-compatible/out/
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,27 @@
+{
+	"name": "@grammyjs/ratelimiter",
+	"version": "2.0.0",
+	"exports": "./mod.ts",
+	"tasks": {
+		"check": "deno check **/*.ts",
+		"test": "deno test --allow-all",
+		"dev": "deno run --watch --allow-all examples/basic.ts"
+	},
+	"fmt": {
+		"options": {
+			"useTabs": true,
+			"lineWidth": 100,
+			"indentWidth": 4,
+			"singleQuote": true
+		}
+	},
+	"compilerOptions": {
+		"strict": true,
+		"lib": ["deno.ns", "deno.window"]
+	},
+	"imports": {
+		"grammy": "npm:grammy@^1.24.0",
+		"grammy/types": "npm:grammy@^1.24.0/types",
+		"@std/assert": "https://deno.land/std@0.224.0/assert/mod.ts"
+	}
+}
