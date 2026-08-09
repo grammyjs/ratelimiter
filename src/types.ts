@@ -1,25 +1,16 @@
-/**
- * A minimal, structurally-compatible representation of the grammY Context object.
- */
-export interface GrammyContext {
-	from?: {
-		id: number;
-		is_bot: boolean;
-		first_name: string;
-		last_name?: string;
-		username?: string;
-		language_code?: string;
-	};
-	chat?: {
-		id: number;
-		type: 'private' | 'group' | 'supergroup' | 'channel';
-		title?: string;
-		username?: string;
-		first_name?: string;
-	};
-}
+import type { Context, NextFunction as GrammyNextFunction } from '@grammyjs/grammy';
 
-export type NextFunction = () => Promise<void>;
+/**
+ * The grammY context type accepted by this plugin.
+ *
+ * This is an alias of grammY's official `Context` type so custom and
+ * transformative context flavours remain compatible with the limiter's
+ * generic APIs.
+ */
+export type GrammyContext = Context;
+
+/** The downstream middleware function supplied by grammY. */
+export type NextFunction = GrammyNextFunction;
 
 // ==================== Core Interfaces ====================
 

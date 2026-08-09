@@ -7,7 +7,7 @@ Telegram bots from spam and resource abuse.
 
 <p align="center">
   <a href="https://github.com/grammyjs/ratelimiter">
-    <img src="./grammy-ratelimiter-cover.png" alt="grammY rate limiter cover">
+    <img src="./grammy-ratelimiter-cover.jpg" alt="grammY rate limiter cover">
   </a>
 </p>
 

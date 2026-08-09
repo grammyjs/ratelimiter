@@ -1,18 +1,71 @@
 import { limit, Limiter } from '../mod.ts';
+import type { MiddlewareFn } from '@grammyjs/grammy';
 import { MemoryStore } from '../src/stores/memory.ts';
 import { assert, assertEquals, assertRejects } from '@std/assert';
 import type { GrammyContext, NextFunction } from '../src/types.ts';
 
-const createMockCtx = (fromId: number): GrammyContext => ({
-	from: { id: fromId, is_bot: false, first_name: 'test' },
-	chat: { id: fromId, type: 'private', first_name: 'test' },
-});
+const createMockCtx = (fromId: number, text?: string): GrammyContext => {
+	const from = { id: fromId, is_bot: false, first_name: 'test' };
+	const chat = { id: fromId, type: 'private' as const, first_name: 'test' };
+
+	return {
+		from,
+		chat,
+		...(text === undefined ? {} : {
+			message: {
+				message_id: 1,
+				date: 0,
+				chat,
+				from,
+				text,
+			},
+		}),
+	} as unknown as GrammyContext;
+};
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const createMemoryStore = () => new MemoryStore(null);
 
 Deno.test('Core Rate Limiter Tests', async (t) => {
+	await t.step('limit() should return a grammY 2 compatible MiddlewareFn', () => {
+		const limiter = new Limiter<GrammyContext>()
+			.useStorage(createMemoryStore())
+			.fixedWindow({ limit: 1, timeFrame: 1000 })
+			.limitFor('user');
+
+		const middleware: MiddlewareFn<GrammyContext> = limit(limiter);
+		assert(typeof middleware === 'function');
+	});
+
+	await t.step('Limiter should accept a transformative context flavour', async () => {
+		type CommandFlavor<C extends GrammyContext> = C & { rateLimitCommand?: string };
+
+		const limiter = new Limiter<CommandFlavor<GrammyContext>>()
+			.useStorage(createMemoryStore())
+			.fixedWindow({ limit: 1, timeFrame: 1000 })
+			.limitFor((ctx) => {
+				const userId = ctx.from?.id;
+				return userId && ctx.rateLimitCommand
+					? `${userId}:${ctx.rateLimitCommand}`
+					: undefined;
+			});
+
+		const middleware: MiddlewareFn<CommandFlavor<GrammyContext>> = limit(limiter);
+		const ctx = createMockCtx(100) as CommandFlavor<GrammyContext>;
+		ctx.rateLimitCommand = '/start';
+
+		let nextCalled = 0;
+		const next: NextFunction = () => {
+			nextCalled++;
+			return Promise.resolve();
+		};
+
+		await middleware(ctx, next);
+		await middleware(ctx, next);
+		assertEquals(nextCalled, 1);
+	});
+
 	await t.step('Builder should throw if essential components are missing', async () => {
 		await assertRejects(
 			// deno-lint-ignore require-await
@@ -262,19 +315,12 @@ Deno.test('Core Rate Limiter Tests', async (t) => {
 	});
 
 	await t.step('Custom key generator should create separate limits', async () => {
-		interface ContextWithCommand extends GrammyContext {
-			message?: {
-				text?: string;
-			};
-		}
-
 		const storage = createMemoryStore();
-		const limiter = new Limiter<ContextWithCommand>()
+		const limiter = new Limiter<GrammyContext>()
 			.useStorage(storage)
 			.fixedWindow({ limit: 1, timeFrame: 1000 })
 			.limitFor((ctx) => {
 				const userId = ctx.from?.id;
-				// This is now fully type-safe, no `any` cast needed.
 				const command = ctx.message?.text?.split(' ')[0];
 				return userId && command ? `${userId}:${command}` : undefined;
 			});
@@ -286,18 +332,16 @@ Deno.test('Core Rate Limiter Tests', async (t) => {
 			return Promise.resolve();
 		};
 
-		const baseCtx = createMockCtx(100);
-
 		// First call for user 100 on /start
-		await middleware({ ...baseCtx, message: { text: '/start' } }, next);
+		await middleware(createMockCtx(100, '/start'), next);
 		assertEquals(nextCalled, 1);
 
 		// Second call for user 100 on /start should be throttled
-		await middleware({ ...baseCtx, message: { text: '/start' } }, next);
+		await middleware(createMockCtx(100, '/start'), next);
 		assertEquals(nextCalled, 1);
 
 		// But a call for the same user on /help should pass
-		await middleware({ ...baseCtx, message: { text: '/help' } }, next);
+		await middleware(createMockCtx(100, '/help'), next);
 		assertEquals(nextCalled, 2);
 	});
 

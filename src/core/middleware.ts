@@ -1,5 +1,6 @@
+import type { MiddlewareFn } from '@grammyjs/grammy';
 import { FixedWindowStrategy } from '../strategies/fixed_window.ts';
-import type { GrammyContext, NextFunction } from '../types.ts';
+import type { GrammyContext } from '../types.ts';
 import { Limiter } from './builder.ts';
 import type { Rule } from './rule.ts';
 
@@ -13,10 +14,10 @@ import type { Rule } from './rule.ts';
  */
 export function limit<C extends GrammyContext>(
 	ruleOrBuilder: Rule<C> | Limiter<C>,
-): (ctx: C, next: NextFunction) => Promise<void> {
+): MiddlewareFn<C> {
 	const rule = ruleOrBuilder instanceof Limiter ? ruleOrBuilder.build() : ruleOrBuilder;
 
-	return async (ctx: C, next: NextFunction): Promise<void> => {
+	return async (ctx, next): Promise<void> => {
 		if (rule.penalty) {
 			const baseKey = rule.keyGenerator(ctx);
 

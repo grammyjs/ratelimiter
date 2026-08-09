@@ -5,13 +5,13 @@
 	"type": "module",
 	"scripts": {
 		"build": "deno2node --project tsconfig.json",
-		"test:deno": "deno test --allow-net",
-		"test:node": "node --test dist/tests/",
-		"test": "npm run test:deno && npm run build && npm run test:node"
+		"test:deno": "deno task ok",
+		"test:node": "npm run build && node --test tests/node.test.mjs",
+		"test": "npm run test:deno && npm run test:node"
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/grammyjs/rateLimiter.git"
+		"url": "git+https://github.com/grammyjs/ratelimiter.git"
 	},
 	"files": [
 		"dist/"
@@ -22,13 +22,11 @@
 	"exports": {
 		".": {
 			"types": "./dist/mod.d.ts",
-			"import": "./dist/mod.js",
-			"require": "./dist/mod.js"
+			"import": "./dist/mod.js"
 		},
 		"./storages": {
 			"types": "./dist/storages.d.ts",
-			"import": "./dist/storages.js",
-			"require": "./dist/storages.js"
+			"import": "./dist/storages.js"
 		}
 	},
 	"keywords": [
@@ -46,11 +44,15 @@
 	"author": "Amir Zouerami",
 	"license": "MIT",
 	"bugs": {
-		"url": "https://github.com/grammyjs/rateLimiter/issues"
+		"url": "https://github.com/grammyjs/ratelimiter/issues"
 	},
-	"homepage": "https://github.com/grammyjs/rateLimiter#readme",
+	"homepage": "https://github.com/grammyjs/ratelimiter#readme",
+	"peerDependencies": {
+		"@grammyjs/grammy": ">=2.0.0-beta.6 <3"
+	},
 	"devDependencies": {
+		"@grammyjs/grammy": "npm:@jsr/grammyjs__grammy@2.0.0-beta.6",
 		"@types/node": "^20.11.20",
-		"deno2node": "^1.5.0"
+		"deno2node": "^1.16.0"
 	}
 }
