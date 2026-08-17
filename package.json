@@ -5,16 +5,24 @@
 	"type": "module",
 	"scripts": {
 		"build": "deno2node --project tsconfig.json",
+		"typecheck": "tsc --noEmit -p tsconfig.json",
+		"lint": "eslint . --max-warnings=0",
+		"lint:fix": "eslint . --fix",
 		"test:deno": "deno task ok",
-		"test:node": "npm run build && node --test tests/node.test.mjs",
-		"test": "npm run test:deno && npm run test:node"
+		"test:redis": "deno task test:redis",
+		"test:node": "npm run build && node --test tests/node/package.test.mjs && npm run test:source-node",
+		"test:source-node": "node --experimental-strip-types --test tests/node/jsr-source.test.mjs",
+		"test": "npm run test:deno && npm run test:node",
+		"prepack": "npm run build",
+		"release:check": "npm run typecheck && npm run lint && deno task ok && deno task doc:lint && deno audit && npm run test:node && deno publish --dry-run --check=all && npm pack --dry-run"
 	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/grammyjs/ratelimiter.git"
 	},
 	"files": [
-		"dist/"
+		"dist/",
+		"grammy-ratelimiter-cover.jpg"
 	],
 	"main": "./dist/mod.js",
 	"module": "./dist/mod.js",
@@ -32,7 +40,6 @@
 	"keywords": [
 		"grammy",
 		"grammy-plugin",
-		"telegraf",
 		"bot",
 		"ratelimiter",
 		"rate-limit",
@@ -48,11 +55,23 @@
 	},
 	"homepage": "https://github.com/grammyjs/ratelimiter#readme",
 	"peerDependencies": {
-		"@grammyjs/grammy": ">=2.0.0-beta.6 <3"
+		"@grammyjs/grammy": ">=2.0.0-beta.8 <3"
 	},
 	"devDependencies": {
-		"@grammyjs/grammy": "npm:@jsr/grammyjs__grammy@2.0.0-beta.6",
-		"@types/node": "^20.11.20",
-		"deno2node": "^1.16.0"
+		"@eslint/js": "^10.0.1",
+		"@grammyjs/grammy": "npm:@jsr/grammyjs__grammy@2.0.0-beta.8",
+		"@types/node": "^26.1.2",
+		"deno2node": "~6.0.0",
+		"eslint": "^10.8.0",
+		"globals": "^17.7.0",
+		"typescript": "~6.0.3",
+		"typescript-eslint": "^8.65.0"
+	},
+	"sideEffects": false,
+	"publishConfig": {
+		"access": "public"
+	},
+	"engines": {
+		"node": ">=22"
 	}
 }

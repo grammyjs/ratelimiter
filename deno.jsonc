@@ -1,7 +1,21 @@
 {
 	"name": "@grammyjs/ratelimiter",
 	"version": "2.0.0",
-	"exports": "./mod.ts",
+	"exports": {
+		".": "./mod.ts",
+		"./storages": "./storages.ts"
+	},
+	"publish": {
+		"include": [
+			"LICENSE",
+			"README.md",
+			"deno.jsonc",
+			"grammy-ratelimiter-cover.jpg",
+			"mod.ts",
+			"storages.ts",
+			"src/"
+		]
+	},
 	"lock": {
 		"frozen": true
 	},
@@ -13,11 +27,15 @@
 		]
 	},
 	"tasks": {
-		"check": "deno check mod.ts storages.ts ./src/ tests/core.test.ts",
-		"test": "deno test tests/core.test.ts",
+		"check": "deno check mod.ts storages.ts ./src/ tests/runtime/ tests/contracts/ tests/support/ tests/integration/",
+		"test:runtime": "deno test tests/runtime/",
+		"test:types": "deno check tests/types/public_api.test.ts",
+		"test": "deno task test:runtime && deno task test:types",
+		"test:redis": "deno test --allow-env=RATELIMITER_REDIS_URL --allow-net tests/integration/redis.integration.test.ts",
 		"ok": "deno fmt --check && deno lint && deno task test && deno task check",
 		"fix": "deno fmt && deno lint --fix",
-		"dev": "deno run --watch --allow-all examples/basic.ts"
+		"dev": "deno run --watch --allow-env=BOT_TOKEN --allow-net=api.telegram.org examples/local-deno-bot.ts",
+		"doc:lint": "deno doc --lint mod.ts storages.ts"
 	},
 	"fmt": {
 		"useTabs": true,
@@ -27,10 +45,13 @@
 	},
 	"compilerOptions": {
 		"strict": true,
-		"lib": ["deno.ns", "deno.window"]
+		"lib": [
+			"deno.ns",
+			"deno.window"
+		]
 	},
 	"imports": {
-		"@grammyjs/grammy": "jsr:@grammyjs/grammy@2.0.0-beta.6",
+		"@grammyjs/grammy": "jsr:@grammyjs/grammy@2.0.0-beta.8",
 		"@std/assert": "jsr:@std/assert@^1.0.19"
 	}
 }

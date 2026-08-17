@@ -2,34 +2,54 @@ name: Test and Build
 
 on:
     push:
-        branches: [main]
+        branches:
+            - main
+            - 'rc/**'
     pull_request:
-        branches: [main]
+        branches:
+            - main
 
 jobs:
     test:
-        strategy:
-            matrix:
-                node-version: [22.x, 24.x]
-
         runs-on: ubuntu-latest
+
+        services:
+            redis:
+                image: redis:8-alpine
+                ports:
+                    - 6379:6379
+                options: >-
+                    --health-cmd "redis-cli ping"
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
 
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v4
+              uses: actions/checkout@v6
 
             - name: Setup Deno
               uses: denoland/setup-deno@v2
               with:
-                  deno-version: v2.x
+                  deno-version: 2.9.5
+                  cache: true
 
             - name: Setup Node.js
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@v6
               with:
-                  node-version: ${{ matrix.node-version }}
+                  node-version: 22
+                  package-manager-cache: false
+
+            - name: Configure JSR npm bridge
+              run: echo '@jsr:registry=https://npm.jsr.io' >> "$HOME/.npmrc"
 
             - name: Install dependencies
-              run: deno ci
+              run: deno install --frozen
 
-            - name: Validate
-              run: npm test
+            - name: Run release checks
+              run: npm run release:check
+
+            - name: Run real Redis integration tests
+              env:
+                  RATELIMITER_REDIS_URL: redis://127.0.0.1:6379
+              run: deno task test:redis

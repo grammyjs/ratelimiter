@@ -1,27 +1,29 @@
-[![Test and Build](https://github.com/Amir-Zouerami/ratelimiter/actions/workflows/test.yml/badge.svg)](https://github.com/Amir-Zouerami/ratelimiter/actions/workflows/test.yml)
-
 # Rate Limit Users (`ratelimiter`)
 
-`ratelimiter` is an advanced and flexible middleware for the grammY framework, designed to protect
-Telegram bots from spam and resource abuse.
+`ratelimiter` is a flexible telegram bot rate-limiting middleware for grammY bot framework.
 
 <p align="center">
   <a href="https://github.com/grammyjs/ratelimiter">
-    <img src="./grammy-ratelimiter-cover.jpg" alt="grammY rate limiter cover">
+    <img src="./grammY-ratelimiter-schema.webp" alt="grammY rate limiter cover">
   </a>
 </p>
 
-At its core, `ratelimiter` acts as a configurable gatekeeper for incoming updates. It allows
-developers to define precise rules for how many messages a user or chat (or any arbitrary entity)
-can send in a given period, ensuring the bot remains responsive and server resources are protected
-from overload.
+## Usage
 
-The plugin inspects each incoming message, identifies its source, and decides if it should be
-processed or dismissed based on the rules you set.
+See the [official grammY rate limiter documentation](https://grammy.dev/plugins/ratelimiter) for
+installation and usage.
 
-> **For more information and how-to instructions, please visit**
-> [**the official grammY ratelimiter documentation.**](https://grammy.dev/plugins/ratelimiter)
+## Development
 
-## License
+Deno is the source runtime; the npm package is generated for Node.js with `deno2node`. Keep public
+APIs strongly typed, documented with JSDoc, and covered in both runtimes.
 
-Distributed under the MIT License. See `LICENSE` for more information.
+```sh
+deno task ok
+npm run typecheck
+npm run lint
+npm run test:node
+```
+
+Run `deno task test:redis` separately against a disposable Redis instance when changing Redis-backed
+behavior.

@@ -1,72 +1,81 @@
-import type { EventMap } from '../types.ts';
-
-/**
- * A type alias for a generic listener function.
- */
+/** Generic internal listener representation. */
 // deno-lint-ignore no-explicit-any
 type Listener = (...args: any[]) => void;
 
+/** Extracts the argument tuple associated with one event key. */
+type EventArgs<T extends object, E extends keyof T> = T[E] extends unknown[] ? T[E] : never;
+
 /**
- * A simple event emitter.
+ * @internal Small synchronous, strongly typed event emitter used by limiter rules.
+ *
+ * The event-map generic is intentionally constrained only to `object` rather
+ * than `Record<string, ...>`. Adding a string index signature would widen
+ * `keyof T` to every string and silently destroy event-name autocomplete and
+ * typo detection for consumers.
+ *
+ * Listeners execute in registration order. Exceptions are intentionally not
+ * swallowed; a listener that throws aborts the current middleware call, matching
+ * normal synchronous event-emitter behavior.
  */
-export class EventEmitter<T extends EventMap> {
+export class EventEmitter<T extends object> {
 	private readonly listeners = new Map<keyof T, Set<Listener>>();
 
 	/**
-	 * Registers a listener for a given event.
+	 * Registers a listener.
 	 *
-	 * @param eventName The name of the event to listen to.
-	 * @param listener The function to call when the event is emitted.
+	 * Adding the same function reference more than once has no additional effect.
 	 */
-	public on<E extends keyof T>(eventName: E, listener: (...args: T[E]) => void): this {
+	public on<E extends keyof T>(
+		eventName: E,
+		listener: (...args: EventArgs<T, E>) => void,
+	): this {
 		const eventListeners = this.listeners.get(eventName) ?? new Set();
-
 		eventListeners.add(listener);
 		this.listeners.set(eventName, eventListeners);
 
 		return this;
 	}
 
-	/**
-	 * Unregisters a listener for a given event.
-	 *
-	 * @param eventName The name of the event.
-	 * @param listener The listener function to remove.
-	 */
-	public off<E extends keyof T>(eventName: E, listener: (...args: T[E]) => void): this {
-		const eventListeners = this.listeners.get(eventName);
-
-		if (eventListeners) {
-			eventListeners.delete(listener);
-		}
+	/** Removes a previously registered listener, if present. */
+	public off<E extends keyof T>(
+		eventName: E,
+		listener: (...args: EventArgs<T, E>) => void,
+	): this {
+		this.listeners.get(eventName)?.delete(listener);
 
 		return this;
 	}
 
-	/**
-	 * Emits an event.
-	 *
-	 * @param eventName The name of the event to emit.
-	 * @param args The arguments to pass to the listeners.
-	 */
-	public emit<E extends keyof T>(eventName: E, ...args: T[E]): void {
+	/** Emits an event synchronously to all currently registered listeners. */
+	public emit<E extends keyof T>(eventName: E, ...args: EventArgs<T, E>): void {
 		const eventListeners = this.listeners.get(eventName);
+		if (!eventListeners) {
+			return;
+		}
 
-		if (eventListeners) {
-			for (const listener of eventListeners) {
-				listener(...args);
-			}
+		for (const listener of eventListeners) {
+			listener(...args);
 		}
 	}
 
 	/**
-	 * Checks if there are any listeners for a specific event.
+	 * Creates an independent snapshot of the current listener registry.
 	 *
-	 * @param eventName The name of the event.
-	 * @returns True if at least one listener is registered.
+	 * Listener function references are shared, but later `on()`/`off()` calls on
+	 * either emitter do not change the other emitter's registration sets.
 	 */
+	public clone(): EventEmitter<T> {
+		const clone = new EventEmitter<T>();
+
+		for (const [eventName, eventListeners] of this.listeners) {
+			clone.listeners.set(eventName, new Set(eventListeners));
+		}
+
+		return clone;
+	}
+
+	/** Returns whether at least one listener is registered for an event. */
 	public hasListeners<E extends keyof T>(eventName: E): boolean {
-		const eventListeners = this.listeners.get(eventName);
-		return eventListeners ? eventListeners.size > 0 : false;
+		return (this.listeners.get(eventName)?.size ?? 0) > 0;
 	}
 }
