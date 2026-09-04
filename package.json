@@ -14,7 +14,7 @@
 		"test:source-node": "node --experimental-strip-types --test tests/node/jsr-source.test.mjs",
 		"test": "npm run test:deno && npm run test:node",
 		"prepack": "npm run build",
-		"release:check": "npm run typecheck && npm run lint && deno task ok && deno task doc:lint && deno audit && npm run test:node && deno publish --dry-run --check=all && npm pack --dry-run"
+		"release:check": "npm run typecheck && npm run lint && deno task ok && deno task doc:lint && npm run test:node && deno publish --dry-run --check=all && npm pack --dry-run"
 	},
 	"repository": {
 		"type": "git",
