@@ -21,8 +21,7 @@
 		"url": "git+https://github.com/grammyjs/ratelimiter.git"
 	},
 	"files": [
-		"dist/",
-		"grammy-ratelimiter-cover.jpg"
+		"dist/"
 	],
 	"main": "./dist/mod.js",
 	"module": "./dist/mod.js",

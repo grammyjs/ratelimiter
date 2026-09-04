@@ -10,7 +10,6 @@
 			"LICENSE",
 			"README.md",
 			"deno.jsonc",
-			"grammy-ratelimiter-cover.jpg",
 			"mod.ts",
 			"storages.ts",
 			"src/"
