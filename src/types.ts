@@ -558,6 +558,17 @@ export interface ILimiterStrategy {
 	refund?(key: string, storage: IStorageEngine, result: LimitResult): Promise<boolean>;
 
 	/**
+	 * @internal Records a consumption result produced by a folded penalty-and-strategy
+	 * storage round trip instead of by {@link ILimiterStrategy.check}.
+	 *
+	 * The limiter runtime may evaluate an active-penalty check together with this
+	 * strategy in one storage operation. Strategies that keep per-consumption state
+	 * for receipt-sensitive refunds implement this so that path stays identical to a
+	 * normal `check()` call.
+	 */
+	adoptConsumption?(result: LimitResult): void;
+
+	/**
 	 * Optionally describes this strategy as one built-in atomic storage primitive.
 	 *
 	 * Strategies that omit this method continue to work with `limit()` and

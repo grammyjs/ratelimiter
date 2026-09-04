@@ -175,6 +175,29 @@ Deno.test('real Redis atomic limiter rolls every strategy key back when a later 
 	}
 });
 
+Deno.test('real Redis atomic limiter reports a first-layer penalty hit without consuming', async () => {
+	const storage = new RedisStore(new RealRedisClient(redisUrl));
+	const strategyKey = key('atomic:penalty:strategy');
+	const penaltyKey = key('atomic:penalty:box');
+	const layers: readonly AtomicLimitLayerInput[] = [{
+		operation: { kind: 'fixed-window', key: strategyKey, limit: 5, timeFrame: 10_000 },
+		penaltyKey,
+	}];
+
+	try {
+		await storage.setPenalty(penaltyKey, 10_000);
+
+		const rejected = await storage.consumeAtomicLimit(layers);
+
+		assertEquals(rejected.outcome, 'penalty-hit');
+		if (rejected.outcome === 'penalty-hit') assertEquals(rejected.index, 0);
+		assertEquals(rejected.results, []);
+		assertEquals(await storage.get<number>(strategyKey), undefined);
+	} finally {
+		await Promise.all([storage.delete(strategyKey), storage.delete(penaltyKey)]);
+	}
+});
+
 Deno.test('real Redis atomic limiter admits exactly the configured capacity under concurrency', async () => {
 	const storage = new RedisStore(new RealRedisClient(redisUrl));
 	const limiterKey = key('atomic:concurrency');

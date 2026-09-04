@@ -53,20 +53,26 @@ export class FixedWindowStrategy implements ILimiterStrategy {
 	 */
 	public async check(key: string, storage: IStorageEngine): Promise<LimitResult> {
 		const increment = await storage.increment(key, this.options.timeFrame);
-		const isAllowed = increment.value <= this.options.limit;
-		const remaining = Math.max(0, Math.floor(this.options.limit - increment.value));
 
 		const result: LimitResult = {
-			isAllowed,
-			remaining,
+			isAllowed: increment.value <= this.options.limit,
+			remaining: Math.max(0, Math.floor(this.options.limit - increment.value)),
 			reset: increment.reset,
 		};
 
-		if (isAllowed) {
-			this.refundDeadlines.set(result, Date.now() + increment.reset);
-		}
+		this.adoptConsumption(result);
 
 		return result;
+	}
+
+	/**
+	 * Records a consumption produced by a folded penalty-and-strategy storage round
+	 * trip so a later receipt-guarded refund behaves exactly as it does after `check()`.
+	 */
+	public adoptConsumption(result: LimitResult): void {
+		if (result.isAllowed) {
+			this.refundDeadlines.set(result, Date.now() + result.reset);
+		}
 	}
 
 	/**

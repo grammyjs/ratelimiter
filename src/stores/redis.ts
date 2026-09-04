@@ -416,7 +416,12 @@ local results = {}
 local writes = {}
 
 local function reject(outcome, index)
-  return cjson.encode({ outcome = outcome, index = index - 1, results = results })
+  -- cjson encodes an empty Lua table as '{}', so a rejection before any layer
+  -- has produced a result (for example a penalty hit on the first layer) must
+  -- force the results field back to a JSON array.
+  local body = cjson.encode(results)
+  if body == '{}' then body = '[]' end
+  return '{"outcome":"' .. outcome .. '","index":' .. (index - 1) .. ',"results":' .. body .. '}'
 end
 
 for index, layer in ipairs(layers) do

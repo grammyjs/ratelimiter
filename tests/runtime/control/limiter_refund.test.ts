@@ -30,6 +30,27 @@ Deno.test('refund restores one successful manual Fixed Window consumption exactl
 	storage.close();
 });
 
+Deno.test('refund still works when a penalty folds the Fixed Window check into one round trip', async () => {
+	const storage = new MemoryStore(null);
+	const limiter = limit(
+		new Limiter()
+			.useStorage(storage)
+			.fixedWindow({ limit: 1, timeFrame: 60_000 })
+			.limitFor('user')
+			.withKeyPrefix('refund:fixed:penalty')
+			.withPenalty({ penaltyTime: 30_000 }),
+	);
+	const ctx = createTestContext({ userId: 1 });
+
+	const consumed = await limiter.consume(ctx);
+
+	assertEquals(consumed.outcome, 'allowed');
+	assertEquals(await limiter.refund(consumed), true);
+	assertEquals(await limiter.refund(consumed), false);
+	assertEquals((await limiter.consume(ctx)).outcome, 'allowed');
+	storage.close();
+});
+
 Deno.test('refund restores capacity for Sliding Window, Token Bucket, and GCRA', async () => {
 	for (
 		const [name, configure] of [

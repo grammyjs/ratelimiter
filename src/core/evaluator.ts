@@ -5,6 +5,7 @@ import { resolveStorageFailure } from './storage_failure.ts';
 import { guardStorage, StorageOperationError } from './storage_guard.ts';
 
 import type {
+	AtomicLimitConsumeResult,
 	GrammyContext,
 	LimiterBypassInfo,
 	LimiterConsumeResult,
@@ -254,86 +255,33 @@ export function createRuleRuntime<
 			return complete(true, decision);
 		}
 
-		if (rule.penalty && penaltyPrefix) {
-			const penaltyKey = `${penaltyPrefix}:${entityKey}`;
-			let isPenalized: boolean;
-
-			try {
-				isPenalized = await storage.checkPenalty(penaltyKey);
-			} catch (error) {
-				if (!(error instanceof StorageOperationError)) {
-					throw error;
-				}
-
-				const mode = await handleStorageFailure(
-					'penalty-check',
-					entityKey,
-					error,
-				);
-
-				if (mode === 'fail-closed') {
-					const info: LimiterBypassInfo = {
-						reason: 'storage-failure',
-						entityKey,
-						phase: 'penalty-check',
-					};
-
-					if (rule.mode === 'observe') {
-						emitBypassed(rule, ctx, info);
-					}
-
-					const decision: LimiterDecision = {
-						outcome: 'storage-failure',
-						mode: rule.mode,
-						entityKey,
-						phase: 'penalty-check',
-						operation: error.operation,
-						key: error.key,
-						resolution: mode,
-						error: error.cause,
-					};
-
-					return complete(rule.mode === 'observe', decision);
-				}
-
-				isPenalized = false;
-			}
-
-			if (isPenalized) {
-				if (rule.events.hasListeners('penaltyHit')) {
-					rule.events.emit('penaltyHit', ctx, entityKey);
-				}
-
-				const decision: LimiterDecision = {
-					outcome: 'penalty-hit',
-					mode: rule.mode,
-					entityKey,
-					penaltyKey,
-				};
-
-				reportDecision(decision);
-
-				return complete(rule.mode === 'observe', decision);
-			}
-		}
-
 		const storageKey = `${strategyPrefix}:${entityKey}`;
 		const strategy = rule.resolveStrategy(ctx);
+		const penaltyKey = rule.penalty && penaltyPrefix
+			? `${penaltyPrefix}:${entityKey}`
+			: undefined;
 
-		let result: LimitResult;
-
-		try {
-			result = await strategy.check(storageKey, storage);
-		} catch (error) {
-			if (!(error instanceof StorageOperationError)) {
-				throw error;
+		const reportPenaltyHit = (): MiddlewareEvaluation | LimiterConsumeResult<M> => {
+			if (rule.events.hasListeners('penaltyHit')) {
+				rule.events.emit('penaltyHit', ctx, entityKey);
 			}
 
-			const mode = await handleStorageFailure(
-				'strategy-check',
+			const decision: LimiterDecision = {
+				outcome: 'penalty-hit',
+				mode: rule.mode,
 				entityKey,
-				error,
-			);
+				penaltyKey: penaltyKey!,
+			};
+
+			reportDecision(decision);
+
+			return complete(rule.mode === 'observe', decision);
+		};
+
+		const reportStrategyFailure = async (
+			error: StorageOperationError,
+		): Promise<MiddlewareEvaluation | LimiterConsumeResult<M>> => {
+			const mode = await handleStorageFailure('strategy-check', entityKey, error);
 			const info: LimiterBypassInfo = {
 				reason: 'storage-failure',
 				entityKey,
@@ -356,6 +304,99 @@ export function createRuleRuntime<
 			};
 
 			return complete(mode === 'fail-open' || rule.mode === 'observe', decision);
+		};
+
+		let result: LimitResult;
+
+		// A configured penalty normally needs its own storage round trip before the
+		// strategy runs. When the strategy and storage both support the atomic
+		// primitive, the active-penalty check and the strategy consumption are
+		// evaluated as one storage operation instead of two.
+		if (
+			penaltyKey !== undefined &&
+			strategy.toAtomicOperation !== undefined &&
+			storage.consumeAtomicLimit !== undefined
+		) {
+			let transaction: AtomicLimitConsumeResult;
+
+			try {
+				transaction = await storage.consumeAtomicLimit([{
+					operation: strategy.toAtomicOperation(storageKey),
+					penaltyKey,
+				}]);
+			} catch (error) {
+				if (!(error instanceof StorageOperationError)) {
+					throw error;
+				}
+
+				return await reportStrategyFailure(error);
+			}
+
+			if (transaction.outcome === 'penalty-hit') {
+				return reportPenaltyHit();
+			}
+
+			result = transaction.results[0]!;
+			strategy.adoptConsumption?.(result);
+		} else {
+			if (penaltyKey !== undefined) {
+				let isPenalized: boolean;
+
+				try {
+					isPenalized = await storage.checkPenalty(penaltyKey);
+				} catch (error) {
+					if (!(error instanceof StorageOperationError)) {
+						throw error;
+					}
+
+					const mode = await handleStorageFailure(
+						'penalty-check',
+						entityKey,
+						error,
+					);
+
+					if (mode === 'fail-closed') {
+						const info: LimiterBypassInfo = {
+							reason: 'storage-failure',
+							entityKey,
+							phase: 'penalty-check',
+						};
+
+						if (rule.mode === 'observe') {
+							emitBypassed(rule, ctx, info);
+						}
+
+						const decision: LimiterDecision = {
+							outcome: 'storage-failure',
+							mode: rule.mode,
+							entityKey,
+							phase: 'penalty-check',
+							operation: error.operation,
+							key: error.key,
+							resolution: mode,
+							error: error.cause,
+						};
+
+						return complete(rule.mode === 'observe', decision);
+					}
+
+					isPenalized = false;
+				}
+
+				if (isPenalized) {
+					return reportPenaltyHit();
+				}
+			}
+
+			try {
+				result = await strategy.check(storageKey, storage);
+			} catch (error) {
+				if (!(error instanceof StorageOperationError)) {
+					throw error;
+				}
+
+				return await reportStrategyFailure(error);
+			}
 		}
 
 		if (result.isAllowed) {
