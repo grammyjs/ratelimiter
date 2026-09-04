@@ -5,13 +5,20 @@
 	"type": "module",
 	"scripts": {
 		"build": "deno2node --project tsconfig.json",
-		"test:deno": "deno test --allow-net",
-		"test:node": "node --test dist/tests/",
-		"test": "npm run test:deno && npm run build && npm run test:node"
+		"typecheck": "tsc --noEmit -p tsconfig.json",
+		"lint": "eslint . --max-warnings=0",
+		"lint:fix": "eslint . --fix",
+		"test:deno": "deno task ok",
+		"test:redis": "deno task test:redis",
+		"test:node": "npm run build && node --test tests/node/package.test.mjs && npm run test:source-node",
+		"test:source-node": "node --experimental-strip-types --test tests/node/jsr-source.test.mjs",
+		"test": "npm run test:deno && npm run test:node",
+		"prepack": "npm run build",
+		"release:check": "npm run typecheck && npm run lint && deno task ok && deno task doc:lint && npm run test:node && deno publish --dry-run --check=all && npm pack --dry-run"
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/grammyjs/rateLimiter.git"
+		"url": "git+https://github.com/grammyjs/ratelimiter.git"
 	},
 	"files": [
 		"dist/"
@@ -22,19 +29,16 @@
 	"exports": {
 		".": {
 			"types": "./dist/mod.d.ts",
-			"import": "./dist/mod.js",
-			"require": "./dist/mod.js"
+			"import": "./dist/mod.js"
 		},
 		"./storages": {
 			"types": "./dist/storages.d.ts",
-			"import": "./dist/storages.js",
-			"require": "./dist/storages.js"
+			"import": "./dist/storages.js"
 		}
 	},
 	"keywords": [
 		"grammy",
 		"grammy-plugin",
-		"telegraf",
 		"bot",
 		"ratelimiter",
 		"rate-limit",
@@ -46,11 +50,27 @@
 	"author": "Amir Zouerami",
 	"license": "MIT",
 	"bugs": {
-		"url": "https://github.com/grammyjs/rateLimiter/issues"
+		"url": "https://github.com/grammyjs/ratelimiter/issues"
 	},
-	"homepage": "https://github.com/grammyjs/rateLimiter#readme",
+	"homepage": "https://github.com/grammyjs/ratelimiter#readme",
+	"peerDependencies": {
+		"@grammyjs/grammy": ">=2.0.0-beta.8 <3"
+	},
 	"devDependencies": {
-		"@types/node": "^20.11.20",
-		"deno2node": "^1.5.0"
+		"@eslint/js": "^10.0.1",
+		"@grammyjs/grammy": "npm:@jsr/grammyjs__grammy@2.0.0-beta.8",
+		"@types/node": "^26.1.2",
+		"deno2node": "~6.0.0",
+		"eslint": "^10.8.0",
+		"globals": "^17.7.0",
+		"typescript": "~6.0.3",
+		"typescript-eslint": "^8.65.0"
+	},
+	"sideEffects": false,
+	"publishConfig": {
+		"access": "public"
+	},
+	"engines": {
+		"node": ">=22"
 	}
 }

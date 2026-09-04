@@ -1,7 +1,11 @@
 /**
- * # Storage Engines
+ * # Rate Limiter Storage Engines
  *
- * This module exports all the available storage engines for the rate-limiter.
+ * Built-in storage implementations for `@grammyjs/ratelimiter`.
+ *
+ * `MemoryStore` is process-local and intended for single-process deployments or
+ * development. `RedisStore` provides shared, atomic state suitable for multiple
+ * processes or machines when backed by the same Redis instance.
  *
  * @module
  */

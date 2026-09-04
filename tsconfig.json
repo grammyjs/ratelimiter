@@ -5,9 +5,14 @@
 		"module": "NodeNext",
 		"moduleResolution": "NodeNext",
 		"outDir": "dist",
+		"rewriteRelativeImportExtensions": true,
 		"skipLibCheck": true,
 		"strict": true,
 		"target": "ES2022"
 	},
-	"include": ["src/**/*.ts", "mod.ts", "storages.ts"]
+	"include": [
+		"src/**/*.ts",
+		"mod.ts",
+		"storages.ts"
+	]
 }
